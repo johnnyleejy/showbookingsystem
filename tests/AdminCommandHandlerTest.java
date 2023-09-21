@@ -1,4 +1,4 @@
-package tests.utility;
+package tests;
 
 import Exceptions.BookingException;
 import Exceptions.InvalidSetupException;
