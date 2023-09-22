@@ -1,8 +1,8 @@
 package tests;
 
-import Exceptions.BookingException;
-import Exceptions.InvalidSetupException;
-import Exceptions.NoSuchShowException;
+import exceptions.BookingException;
+import exceptions.InvalidSetupException;
+import exceptions.NoSuchShowException;
 import objects.Show;
 import objects.Ticket;
 import org.junit.Assert;

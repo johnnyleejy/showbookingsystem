@@ -1,7 +1,7 @@
 package utility;
 
-import Exceptions.InvalidSetupException;
-import Exceptions.NoSuchShowException;
+import exceptions.InvalidSetupException;
+import exceptions.NoSuchShowException;
 import objects.Seat;
 import objects.Show;
 import objects.Ticket;

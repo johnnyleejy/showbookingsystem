@@ -1,6 +1,6 @@
 package tests;
 
-import Exceptions.*;
+import exceptions.*;
 import objects.Seat;
 import objects.Show;
 import objects.Ticket;

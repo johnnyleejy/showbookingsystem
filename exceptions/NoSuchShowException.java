@@ -1,4 +1,4 @@
-package Exceptions;
+package exceptions;
 
 public class NoSuchShowException extends Exception {
     public NoSuchShowException() {
