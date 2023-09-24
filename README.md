@@ -4,6 +4,11 @@
 
 This is a simple Java CLI application that allows you to manage shows and make bookings. Examples are provided below.
 
+## Assumptions made
+1. Buyer cannot book seats that are already occupied
+2. Cancelling a ticket will free the booked seats for other buyers
+3. Buyer cannot make bookings for shows that don't exist
+
 ## Sample commands:
 
 **Admin**
