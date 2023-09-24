@@ -23,7 +23,7 @@ This is a simple Java CLI application that allows you to manage shows and make b
 
 ## How to use this application
 
-1. Run main.java
+1. Run `main.java`
 2. Interact with the CLI with your command inputs
 
 ## Test cases: 
