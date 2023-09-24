@@ -24,6 +24,7 @@ public class BuyerCommandHandler {
      *
      * @param showNumber The show number
      * @return A hashmap of the available seats
+     * @throws NoSuchShowException if the show does not exist
      */
     public HashMap<String, Seat> retrieveAndPrintAvailability(int showNumber) throws NoSuchShowException {
         Show show = shows.get(showNumber);
@@ -46,6 +47,8 @@ public class BuyerCommandHandler {
      * @param phoneNumber The phone number of the buyer
      * @param seats The seats to book
      * @return The newly created ticket
+     * @throws NoSuchShowException if the show does not exist
+     * @throws BookingException if the booking is invalid
      */
     public Ticket book(int showNumber, String phoneNumber, String seats) throws NoSuchShowException, BookingException {
         Show show = shows.get(showNumber);
@@ -86,6 +89,7 @@ public class BuyerCommandHandler {
      * @param ticketNumber The ticket number for the booking
      * @param phoneNumber The phone number of the buyer
      * @return The cancelled ticket
+     * @throws NoSuchTicketException is the ticket does not exist
      */
     public Ticket cancel(UUID ticketNumber, String phoneNumber, Date currentDate) throws NoSuchTicketException,
             CancelBookingException, BookingException {

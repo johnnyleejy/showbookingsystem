@@ -54,6 +54,7 @@ public class Show {
      * Cancels a specific booking for a given show
      *
      * @param ticketNumber The ticket number to cancel
+     * @throws BookingException if the ticket number is not found
      */
     public void cancelBooking(UUID ticketNumber) throws BookingException {
         Optional<Ticket> toRemove = this.getTickets().stream().filter(t -> t.getTicketNumber().equals(ticketNumber)).findFirst();

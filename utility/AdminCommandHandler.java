@@ -23,6 +23,7 @@ public class AdminCommandHandler {
      * @param numOfSeats The number of seats per row
      * @param cancellationWindow The cancellation window that the buyer is allowed to cancel their booking
      * @return The created show
+     * @throws InvalidSetupException if the setup details are invalid
      */
     public Show setup(int showNumber, int numOfRows, int numOfSeats, int cancellationWindow) throws InvalidSetupException {
         // Seat validation
@@ -53,6 +54,7 @@ public class AdminCommandHandler {
      *
      * @param showNumber The show number to view
      * @return The show to view
+     * @throws NoSuchShowException if the show does not exist
      */
     public Show viewAndPrintDetails(int showNumber) throws NoSuchShowException {
         Show show = shows.get(showNumber);
