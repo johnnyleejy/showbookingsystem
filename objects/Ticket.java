@@ -8,13 +8,13 @@ public class Ticket {
     private String phoneNumber;
     // ID of the ticket
     private UUID ticketNumber;
-    private ArrayList<String> seatNumbers;
+    private ArrayList<Seat> seats;
     private Date bookingTime;
     private Show show;
 
-    public Ticket(String phoneNumber, UUID ticketNumber, ArrayList<String> seats, Date bookingTime, Show show) {
+    public Ticket(String phoneNumber, UUID ticketNumber, ArrayList<Seat> seats, Date bookingTime, Show show) {
         this.setPhoneNumber(phoneNumber);
-        this.setSeatNumbers(seats);
+        this.setSeats(seats);
         this.setTicketNumber(ticketNumber);
         this.setBookingTime(bookingTime);
         this.setShow(show);
@@ -36,12 +36,12 @@ public class Ticket {
         this.ticketNumber = ticketNumber;
     }
 
-    public ArrayList<String> getSeatNumbers() {
-        return seatNumbers;
+    public ArrayList<Seat> getSeats() {
+        return seats;
     }
 
-    public void setSeatNumbers(ArrayList<String> seatNumbers) {
-        this.seatNumbers = seatNumbers;
+    public void setSeats(ArrayList<Seat> seats) {
+        this.seats = seats;
     }
 
     public Date getBookingTime() {

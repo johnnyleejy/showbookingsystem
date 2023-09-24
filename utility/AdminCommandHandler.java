@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AdminCommandHandler {
-    private HashMap<Integer, Show> shows;
-    private static String alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private final HashMap<Integer, Show> shows;
     public AdminCommandHandler(HashMap<Integer, Show> shows) {
         this.shows = shows;
     }
@@ -40,6 +39,7 @@ public class AdminCommandHandler {
         ArrayList<Seat> seats = new ArrayList<>();
         for (int i = 0; i < numOfRows; i++) {
             for (int j = 0; j < numOfSeats; j++){
+                String alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
                 seats.add(new Seat(alphabets.charAt(i) + Integer.toString(j + 1), false));
             }
         }
@@ -70,10 +70,10 @@ public class AdminCommandHandler {
             System.out.println("Ticket number: " + ticket.getTicketNumber());
             System.out.println("Buyer phone number: " + ticket.getPhoneNumber());
             System.out.println("Seats booked: ");
-            for (String seatNumbers: ticket.getSeatNumbers()) {
-                System.out.print(seatNumbers + " ");
+            for (Seat seat: ticket.getSeats()) {
+                System.out.print(seat.getSeatNumber() + " ");
             }
-            System.out.println("");
+            System.out.println(" ");
         }
         System.out.println("--------------------------------------------");
         return show;

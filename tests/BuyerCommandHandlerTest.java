@@ -79,6 +79,29 @@ public class BuyerCommandHandlerTest {
             // And no bookings will be created
             Assertions.assertEquals(0, tickets.size());
         }
+
+        @Test
+        public void booking_fail_seatsAlreadyTaken() throws InvalidSetupException, BookingException, NoSuchShowException {
+            // Given a created show and an existing booking
+            int showNumber = 1;
+            setupShow(showNumber, 10, 10, 2);
+            String phoneNumber = "92344321";
+            String seats = "A1,A2,A3";
+            buyerCommandHandler.book(showNumber, phoneNumber, seats);
+            Assertions.assertEquals(1, tickets.size());
+
+            // When the buyer books a ticket that contains occupied seats A2
+            String phoneNumber2 = "92344322";
+            String seats2 = "B1,A2,B3";
+
+            // Then an exception will be thrown
+            Exception exception = Assertions.assertThrows(BookingException.class, () ->
+                    buyerCommandHandler.book(showNumber, phoneNumber2, seats2));
+            Assertions.assertEquals("Seat: A2 is not available.", exception.getMessage());
+
+            // And no bookings will be created
+            Assertions.assertEquals(1, tickets.size());
+        }
     }
 
     @Nested
@@ -99,9 +122,25 @@ public class BuyerCommandHandlerTest {
             Assertions.assertNotNull(ticket.getTicketNumber());
             Assertions.assertEquals(showNumber, ticket.getShow().getNumber());
             Assertions.assertEquals(phoneNumber, ticket.getPhoneNumber());
-            Assertions.assertEquals(ticket.getSeatNumbers().size(), seats.split(",").length);
-            Assertions.assertArrayEquals(ticket.getSeatNumbers().toArray(), new ArrayList<>(Arrays.asList("A1", "A2", "A3")).toArray());
+            Assertions.assertEquals(ticket.getSeats().size(), seats.split(",").length);
+            Object[] expectedSeatNumbers = ticket.getSeats().stream().map(Seat::getSeatNumber).toArray();
+            Assertions.assertArrayEquals(expectedSeatNumbers, new ArrayList<>(Arrays.asList("A1", "A2", "A3")).toArray());
             Assertions.assertEquals(1, shows.get(showNumber).getTickets().size());
+
+            // And if another buyer makes a booking for the same show
+            String phoneNumber2 = "92344322";
+            String seats2 = "B1,B2,B3";
+            Ticket ticket2 = buyerCommandHandler.book(showNumber, phoneNumber2, seats2);
+
+            // Then the booking should be created successfully for the second buyer
+            Assertions.assertEquals(2, tickets.size());
+            Assertions.assertNotNull(ticket2.getTicketNumber());
+            Assertions.assertEquals(showNumber, ticket2.getShow().getNumber());
+            Assertions.assertEquals(phoneNumber2, ticket2.getPhoneNumber());
+            Assertions.assertEquals(ticket2.getSeats().size(), seats2.split(",").length);
+            Object[] expectedSeatNumbers2 = ticket2.getSeats().stream().map(Seat::getSeatNumber).toArray();
+            Assertions.assertArrayEquals(expectedSeatNumbers2, new ArrayList<>(Arrays.asList("B1" ,"B2", "B3")).toArray());
+            Assertions.assertEquals(2, shows.get(showNumber).getTickets().size());
         }
     }
 

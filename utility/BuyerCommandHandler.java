@@ -8,15 +8,11 @@ import objects.Seat;
 import objects.Show;
 import objects.Ticket;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.regex.PatternSyntaxException;
+import java.util.*;
 
 public class BuyerCommandHandler {
-    private HashMap<Integer, Show> shows;
-    private HashMap<UUID, Ticket> tickets;
+    private final HashMap<Integer, Show> shows;
+    private final HashMap<UUID, Ticket> tickets;
 
     public BuyerCommandHandler(HashMap<Integer, Show> shows, HashMap<UUID, Ticket> tickets) {
         this.shows = shows;
@@ -37,10 +33,8 @@ public class BuyerCommandHandler {
         HashMap<String, Seat> availableSeats = show.getAvailableSeats();
         System.out.println("Available seats: ");
         System.out.println("----------------------------------");
-        for (Seat seat: availableSeats.values()) {
-            System.out.print(seat.getSeatNumber() + " ");
-        }
-        System.out.println("");
+        availableSeats.values().forEach(s -> System.out.print(s.getSeatNumber() + " "));
+        System.out.println(" ");
         System.out.println("----------------------------------");
         return availableSeats;
     }
@@ -66,35 +60,24 @@ public class BuyerCommandHandler {
             // Can also return booking under the phoneNumber instead of throwing exception
             throw new BookingException("Phone number: " + phoneNumber + " already has an existing booking.");
         }
-        try {
-            String[] seatArray = seats.split(",");
-            HashMap<String, Seat> availableSeatHashMap = new HashMap<>();
-            // Add available seats to hashmap
-            for (Seat seat: show.getSeats()) {
-                if (!seat.isOccupied()) {
-                    availableSeatHashMap.put(seat.getSeatNumber(), seat);
-                }
+        String[] seatArray = seats.split(",");
+        // Validate if seat is available for booking
+        HashMap<String, Seat> availableSeats = show.getAvailableSeats();
+        ArrayList<Seat> seatsForBooking = new ArrayList<>();
+        for (String value : seatArray) {
+            if (!availableSeats.containsKey(value)) {
+                throw new BookingException("Seat: " + value + " is not available.");
             }
-            // Validate if seat is available for booking
-            ArrayList<String> seatNumbersForBooking = new ArrayList<>();
-            for (int i = 0; i < seatArray.length; i++) {
-                if (!availableSeatHashMap.containsKey(seatArray[i])) {
-                    throw new BookingException("Seat: " + seatArray[i] + " is not available.");
-                }
-                seatNumbersForBooking.add(seatArray[i]);
-            }
-            // Create ticket
-            UUID ticketNumber = UUID.randomUUID();
-            Ticket ticket = new Ticket(phoneNumber, ticketNumber, seatNumbersForBooking, new Date(), show);
-            tickets.put(ticketNumber, ticket);
-            show.getTickets().add(ticket);
-            // Update seat to occupied
-            show.occupySeats(seatNumbersForBooking);
-            return ticket;
+            seatsForBooking.add(availableSeats.get(value));
         }
-        catch (PatternSyntaxException e) {
-            throw new PatternSyntaxException("Seats should be comma seperated.", ",", 0);
-        }
+        // Create ticket
+        UUID ticketNumber = UUID.randomUUID();
+        Ticket ticket = new Ticket(phoneNumber, ticketNumber, seatsForBooking, new Date(), show);
+        tickets.put(ticketNumber, ticket);
+        show.getTickets().add(ticket);
+        // Update seat to occupied
+        seatsForBooking.forEach(s -> s.setOccupied(true));
+        return ticket;
     }
 
     /**
@@ -104,7 +87,8 @@ public class BuyerCommandHandler {
      * @param phoneNumber The phone number of the buyer
      * @return The cancelled ticket
      */
-    public Ticket cancel(UUID ticketNumber, String phoneNumber, Date currentDate) throws NoSuchTicketException, CancelBookingException {
+    public Ticket cancel(UUID ticketNumber, String phoneNumber, Date currentDate) throws NoSuchTicketException,
+            CancelBookingException, BookingException {
         Ticket ticket = tickets.get(ticketNumber);
         if (ticket == null) {
             throw new NoSuchTicketException();

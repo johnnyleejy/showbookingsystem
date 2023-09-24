@@ -1,9 +1,8 @@
 package objects;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.UUID;
+import exceptions.BookingException;
+
+import java.util.*;
 
 public class Show {
     // ID of the show
@@ -56,23 +55,16 @@ public class Show {
      *
      * @param ticketNumber The ticket number to cancel
      */
-    public void cancelBooking(UUID ticketNumber) {
-        Ticket toRemove = null;
-        for (Ticket ticket: this.getTickets()) {
-            if (ticket.getTicketNumber().equals(ticketNumber)) {
-                toRemove = ticket;
-                break;
-            }
+    public void cancelBooking(UUID ticketNumber) throws BookingException {
+        Optional<Ticket> toRemove = this.getTickets().stream().filter(t -> t.getTicketNumber().equals(ticketNumber)).findFirst();
+        if (toRemove.isEmpty()) {
+            // This should not happen
+            throw new BookingException("Unexpected state: ticket with UUID " + ticketNumber + " not found.");
         }
-        for (String seatNumber: toRemove.getSeatNumbers()) {
-            Optional<Seat> occupiedSeat = this.getSeats().stream().filter(seat -> seat.getSeatNumber().equals(seatNumber)).findFirst();
-            if (occupiedSeat.isPresent()) {
-                // Set seats back to vacant
-                occupiedSeat.get().setOccupied(false);
-            }
-        }
+        // Set seats to vacant
+        toRemove.get().getSeats().forEach(s -> s.setOccupied(false));
         // Remove cancelled ticket
-        this.getTickets().remove(toRemove);
+        this.getTickets().remove(toRemove.get());
     }
 
     /**
@@ -82,12 +74,9 @@ public class Show {
      * @return The boolean value whether this phone number has a booking for the show
      */
     public boolean hasBookedBefore(String phoneNumber) {
-        for (Ticket ticket: this.getTickets()) {
-            if (ticket.getPhoneNumber().equals(phoneNumber)) {
-                return true;
-            }
-        }
-        return false;
+        Optional<Ticket> existingBooking = this.getTickets().stream().filter(t -> t.getPhoneNumber()
+                .equals(phoneNumber)).findFirst();
+        return existingBooking.isPresent();
     }
 
     /**
@@ -97,24 +86,7 @@ public class Show {
      */
     public HashMap<String, Seat> getAvailableSeats() {
         HashMap<String, Seat> availableSeats = new HashMap<>();
-        for (Seat seat: this.getSeats()) {
-            if (!seat.isOccupied()) {
-                availableSeats.put(seat.getSeatNumber(), seat);
-            }
-        }
+        this.getSeats().stream().filter(s -> !s.isOccupied()).forEach(s -> availableSeats.put(s.getSeatNumber(), s));
         return availableSeats;
-    }
-
-    /**
-     * Updates the isOccupied status for the specified seats to true
-     *
-     * @param seatNumbersForBooking The arraylist containing the seat numbers to occupy
-     */
-    public void occupySeats(ArrayList<String> seatNumbersForBooking) {
-        HashMap<String, Seat> availableSeats = this.getAvailableSeats();
-        for (String seatNumber: seatNumbersForBooking) {
-            Seat seat = availableSeats.get(seatNumber);
-            seat.setOccupied(true);
-        }
     }
 }
